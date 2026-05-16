@@ -19,7 +19,6 @@ A aplicação gerencia um cadastro completo de usuários utilizando uma **Arquit
 <p align="center">
   <img src="./fluxo.png" alt="Fluxo do Projeto" width="600">
 </p>
----
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -88,7 +87,8 @@ A API conta com uma interface de testes visual e automatizada que dispensa o uso
 ---
 ## 📊 Outros Links Úteis de Monitoramento
 
-* **API REST (Dados puros):** `http://localhost:3000/users`
+* **API REST (Dados puros users):** `http://localhost:3000/users`
+* **API REST (Dados puros userLogs):** `http://localhost:3000/users/logs`
 * **Painel Administrativo do RabbitMQ:** `http://localhost:15672`
   * **Usuário:** `guest`
   * **Senha:** `guest`
