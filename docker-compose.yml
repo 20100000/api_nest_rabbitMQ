@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nest_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root123
+      POSTGRES_DB: testnest
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d testnest"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: nest_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # Porta de comunicação da fila
+      - "15672:15672" # Porta do painel web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root123
+      DATABASE_NAME: testnest
+      DATABASE_URL: "postgresql://root:root123@db:5432/testnest?schema=public"
+      # URL de conexão interna do RabbitMQ para a API usar
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "npx prisma db push && npx prisma generate && npx prisma db seed && npm run start:dev"
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy # Aguarda o RabbitMQ estar pronto antes da API subir
+
+volumes:
+  pgdata:
