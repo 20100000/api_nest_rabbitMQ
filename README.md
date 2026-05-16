@@ -134,7 +134,6 @@ A API conta com uma interface de testes visual e automatizada que dispensa o uso
    * A resposta HTTP continuará sendo instantânea e os logs correspondentes de `UPDATE` e `DELETE` entrarão na fila de auditoria em segundo plano normalmente.
 
 ---
-
 ## 📊 Outros Links Úteis de Monitoramento
 
 * **API REST (Dados puros):** `http://localhost:3000/users`
