@@ -22,7 +22,7 @@ A aplicação gerencia um cadastro completo de usuários utilizando uma **Arquit
 
 ## 🚀 Tecnologias Utilizadas
 
-* **[NestJS](https://nestjs.com)** - Framework TypeScript estruturado para construir APIs escaláveis.
+* **[NestJS](https://nestjs.com)** - Framework TypeScript estruturado para construir APIs escaláveis em Node.js.
 * **[Prisma 7](https://prisma.io)** - ORM de última geração com suporte a arquivos de configuração avançados (`prisma.config.ts`).
 * **[RabbitMQ](https://rabbitmq.com)** - Broker de mensagens de código aberto para comunicação assíncrona baseada em filas.
 * **[PostgreSQL](https://postgresql.org)** - Sistema de banco de dados relacional robusto e confiável.
