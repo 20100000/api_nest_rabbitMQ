@@ -16,57 +16,9 @@ A aplicação gerencia um cadastro completo de usuários utilizando uma **Arquit
 1. **Operações Síncronas (HTTP REST):** Quando um cliente faz uma requisição HTTP (`POST`, `PATCH`, `DELETE`) para gerenciar um usuário, a API valida e persiste a alteração no banco de dados PostgreSQL instantaneamente e devolve a resposta imediata para o cliente (garantindo baixíssima latência).
 2. **Mensageria Assíncrona (RabbitMQ):** No mesmo instante em que a resposta HTTP é enviada, a API publica um evento contendo os dados da ação (`CREATE`, `UPDATE` ou `DELETE`) em uma fila de mensageria do **RabbitMQ** (`user_logs_queue`).
 3. **Processamento em Segundo Plano (Background Worker):** Um consumidor interno escuta essa fila, aguarda um tempo predefinido (atraso simulado de 5 segundos) e persiste o histórico de auditoria na tabela de logs (`UserLogs`). Como a tabela de logs é independente, o histórico é preservado de forma segura mesmo que o usuário original venha a ser deletado do sistema.
-**Fluxo do prójeto**
-
- ┌────────────────────────────────────────────────────────┐
- │                   SWAGGER UI / CLIENT                  │
- │              http://localhost:3000/api                 │
- └───────────────────────────┬────────────────────────────┘
-                             │
-                  (1) Requisição HTTP POST
-                      {"email": "...", "name": "..."}
-                             │
-                             ▼
- ┌────────────────────────────────────────────────────────┐
- │                    USERS CONTROLLER                    │
- │               (Endpoint HTTP: @Post())                 │
- └───────────────────────────┬────────────────────────────┘
-                             │
-            ┌────────────────┴────────────────┐
-            │ (2) Fluxo Síncrono              │ (3) Fluxo Assíncrono
-            ▼                                 ▼
- ┌────────────────────--┐            ┌────────────────────┐
- │   USERS SERVICE      │            │    RABBITMQ BUS    │
- │  (Lógica de Negócico)│            │  (LOG_CLIENT proxy)│
- └──────────┬─────────--┘            └──────────┬─────────┘
-            │                                   │
-     Envia para o Prisma               Dispara Evento AMQP
-            │                          'user_log_event'
-            ▼                                 │
- ┌────────────────────┐                       ▼
- │  POSTGRESQL (DB)   │            ┌────────────────────┐
- │   Tabela 'users'   │            │   user_logs_queue  │
- └──────────┬─────────┘            └──────────┬─────────┘
-            │                                 │
-    (4) Retorna Usuário Criado                │ Mensagem fica retida
-        com ID e timestamps                   │ aguardando processamento
-            │                                 │
-            ▼                                 ▼
- ┌────────────────────┐            ┌────────────────────┐
- │  RESPOSTA HTTP     │            │  USERS CONTROLLER  │
- │  (Imediata: 201)   │            │  (@EventPattern)   │
- └────────────────────┘            └──────────┬─────────┘
-                                              │
-                                       (5) Consome Fila
-                                           Aplica Delay de 5s
-                                              │
-                                              ▼
-                                   ┌────────────────────┐
-                                   │  POSTGRESQL (DB)   │
-                                   │ Tabela 'user_logs' │
-                                   └────────────────────┘
-
-
+<p align="center">
+  <img src="./fluxo.png" alt="Fluxo do Projeto" width="600">
+</p>
 ---
 
 ## 🚀 Tecnologias Utilizadas
