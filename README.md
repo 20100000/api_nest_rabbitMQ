@@ -36,7 +36,7 @@ A aplicação gerencia um cadastro completo de usuários utilizando uma **Arquit
 Como todo o ecossistema foi containerizado e configurado com checagens de integridade físicas (*healthchecks*), você não precisa ter o Node.js, PostgreSQL ou RabbitMQ instalados fisicamente na sua máquina.
 1. **Clonar o projeto**
    ```bash
-   git clone git@github.com:20100000/api_nest_rabbitMQ.git
+   git clone https://github.com/20100000/api_nest_rabbitMQ.git
    ```
 Certifique-se de ter o Docker ativo no seu terminal e execute a sequência abaixo na **raiz do projeto**:
 
